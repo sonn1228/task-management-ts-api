@@ -1,10 +1,12 @@
 import { Request, Response } from "express";
 import Task from "../models/task.model";
 import paginationHelper from "../../../helpers/pagination.helper";
+import searchHelper from "../../../helpers/search.helper";
 export const index = async (req: Request, res: Response) => {
   interface Find {
     deleted: boolean;
     status?: string;
+    title?: RegExp;
   }
   const find: Find = {
     deleted: false,
@@ -23,7 +25,7 @@ export const index = async (req: Request, res: Response) => {
   }
   // end sort
 
-  // Phân trang
+  // pagination
   const countTasks = await Task.countDocuments(find);
   let initPagination = {
     currentPage: 1,
@@ -32,7 +34,14 @@ export const index = async (req: Request, res: Response) => {
   };
   const objPagination = paginationHelper(initPagination, req.query, countTasks);
 
-  // Hết Phân trang
+  // end pagination
+
+  // search
+  const objSearch = searchHelper(req.query);
+  if (req.query.keyword) {
+    find.title = objSearch.regex;
+  }
+  // end search
 
   try {
     const tasks = await Task.find(find)
