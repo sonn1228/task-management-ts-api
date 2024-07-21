@@ -7,5 +7,6 @@ router.get("/detail/:id", controller.detail);
 router.patch("/change-status/:id", controller.changeStatus);
 router.patch("/change-multi", controller.changeMulti);
 router.post("/create", controller.create);
+router.patch("/edit/:id", controller.editPatch);
 
 export const taskRoutes: Router = router;
