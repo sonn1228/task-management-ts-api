@@ -3,7 +3,7 @@ import Task from "../models/task.model";
 import paginationHelper from "../../../helpers/pagination.helper";
 import searchHelper from "../../../helpers/search.helper";
 
-// [GET] /api/v1
+// [GET] /api/v1/tasks
 
 export const index = async (req: Request, res: Response) => {
   interface Find {
@@ -56,7 +56,7 @@ export const index = async (req: Request, res: Response) => {
     res.status(500).json({ error: "An error occurred while fetching tasks." });
   }
 };
-// [GET] /api/v1/detail/:id
+// [GET] /api/v1/tasks/detail/:id
 export const detail = async (req: Request, res: Response) => {
   const id: string = req.params.id;
   try {
@@ -75,7 +75,7 @@ export const detail = async (req: Request, res: Response) => {
   }
 };
 
-// [PATCH] /api/v1/change-status/:id
+// [PATCH] /api/v1/tasks/change-status/:id
 export const changeStatus = async (req: Request, res: Response) => {
   const id = req.params.id;
   const status: string = req.body.status;
@@ -97,7 +97,7 @@ export const changeStatus = async (req: Request, res: Response) => {
   }
 };
 
-// [PATCH] /api/v1/changeMulti
+// [PATCH] /api/v1/tasks/changeMulti
 export const changeMulti = async (req: Request, res: Response) => {
   const ids: string[] = req.body.ids;
   const key: string = req.body.key;
@@ -126,6 +126,21 @@ export const changeMulti = async (req: Request, res: Response) => {
     res.json({
       code: 200,
       message: "Update status successfully.",
+    });
+  } catch (error) {
+    res.json(error);
+  }
+};
+// [POST] /api/v1/tasks/create
+export const create = async (req: Request, res: Response) => {
+  try {
+    const task = new Task(req.body);
+    const data = await task.save();
+
+    res.json({
+      code: 200,
+      message: "Create successfully.",
+      data: data,
     });
   } catch (error) {
     res.json(error);
