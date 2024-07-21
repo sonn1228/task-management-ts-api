@@ -4,7 +4,6 @@ import * as generateHelper from "../../../helpers/generate.helper";
 import md5 from "md5";
 // [POST]/api/v1/users/register
 export const register = async (req: Request, res: Response) => {
-  console.log(req.body);
   const existUser = await User.findOne({
     email: req.body.email,
     deleted: false,
@@ -29,6 +28,46 @@ export const register = async (req: Request, res: Response) => {
       code: 200,
       message: "Create successfully.",
       data: data,
+    });
+  } catch (error) {
+    res.json({
+      code: 400,
+      error: error,
+    });
+  }
+};
+// [POST]/api/v1/users/login
+export const login = async (req: Request, res: Response) => {
+  const email: string = req.body.email;
+  const password: string = req.body.password;
+
+  try {
+    const existUser = await User.findOne({
+      email: email,
+      deleted: false,
+    });
+
+    if (!existUser) {
+      res.json({
+        code: 400,
+        message: "Email Not Found!",
+      });
+      return;
+    }
+
+    if (existUser.password != md5(password)) {
+      res.json({
+        code: 400,
+        message: "Password error!",
+      });
+      return;
+    }
+    const token = existUser.token;
+    res.cookie("token", token);
+    res.json({
+      code: 200,
+      message: "Login successfully.",
+      token: token,
     });
   } catch (error) {
     res.json({
