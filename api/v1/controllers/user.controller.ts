@@ -76,19 +76,14 @@ export const login = async (req: Request, res: Response) => {
     });
   }
 };
-// [POST]/api/v1/users/detail/:id
-export const detail = async (req: Request, res: Response) => {
+// [POST]/api/v1/users/detail
+export const detail = async (req: any, res: Response) => {
   const id: string = req.params.id;
   try {
-    const user = await User.findOne({
-      deleted: false,
-      _id: id,
-    }).select("-password -token");
-
     res.json({
       code: 200,
       message: "success",
-      data: user,
+      data: req.user,
     });
   } catch (error) {
     res.json({
