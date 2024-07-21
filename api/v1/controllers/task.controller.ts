@@ -1,16 +1,64 @@
 import { Request, Response } from "express";
 import Task from "../models/task.model";
-
+import paginationHelper from "../../../helpers/pagination.helper";
 export const index = async (req: Request, res: Response) => {
-  const task = await Task.find({});
-  res.json(task);
+  interface Find {
+    deleted: boolean;
+    status?: string;
+  }
+  const find: Find = {
+    deleted: false,
+  };
+
+  // status
+  if (req.query.status) {
+    find.status = req.query.status.toString();
+  }
+  // end status
+
+  // sort
+  const sort: any = {};
+  if (req.query.sortKey && req.query.sortValue) {
+    sort[`${req.query.sortKey}`] = req.query.sortValue.toString();
+  }
+  // end sort
+
+  // Phân trang
+  const countTasks = await Task.countDocuments(find);
+  let initPagination = {
+    currentPage: 1,
+    limitItems: 2,
+    skip: 0,
+  };
+  const objPagination = paginationHelper(initPagination, req.query, countTasks);
+
+  // Hết Phân trang
+
+  try {
+    const tasks = await Task.find(find)
+      .sort(sort)
+      .limit(objPagination.limitItems)
+      .skip(objPagination.skip);
+    res.json(tasks);
+  } catch (error) {
+    res.status(500).json({ error: "An error occurred while fetching tasks." });
+  }
 };
 
 export const detail = async (req: Request, res: Response) => {
   const id: string = req.params.id;
-  const task = await Task.find({
-    _id: id,
-    deleted: false,
-  });
-  res.json(task);
+  try {
+    const task = await Task.findOne({
+      _id: id,
+      deleted: false,
+    });
+    if (!task) {
+      return res.status(404).json({ error: "Task not found." });
+    }
+    res.json(task);
+  } catch (error) {
+    res
+      .status(500)
+      .json({ error: "An error occurred while fetching the task." });
+  }
 };
