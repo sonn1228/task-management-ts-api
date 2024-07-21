@@ -101,14 +101,15 @@ export const changeStatus = async (req: Request, res: Response) => {
 export const changeMulti = async (req: Request, res: Response) => {
   const ids: string[] = req.body.ids;
   const key: string = req.body.key;
-  const value: string = req.body.value;
 
   enum Key {
     STATUS = "status",
+    DELETE = "delete",
   }
   try {
     switch (key) {
       case Key.STATUS:
+        const value: string = req.body.value;
         await Task.updateMany(
           {
             _id: { $in: ids },
@@ -118,9 +119,23 @@ export const changeMulti = async (req: Request, res: Response) => {
           }
         );
         break;
+      case Key.DELETE:
+        await Task.updateMany(
+          {
+            _id: { $in: ids },
+          },
+          {
+            deleted: true,
+          }
+        );
+        break;
 
       default:
-        break;
+        res.json({
+          code: 400,
+          message: "Not found.",
+        });
+        return;
     }
 
     res.json({
