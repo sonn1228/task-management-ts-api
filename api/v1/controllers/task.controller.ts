@@ -2,6 +2,9 @@ import { Request, Response } from "express";
 import Task from "../models/task.model";
 import paginationHelper from "../../../helpers/pagination.helper";
 import searchHelper from "../../../helpers/search.helper";
+
+// [GET] /api/v1
+
 export const index = async (req: Request, res: Response) => {
   interface Find {
     deleted: boolean;
@@ -53,7 +56,7 @@ export const index = async (req: Request, res: Response) => {
     res.status(500).json({ error: "An error occurred while fetching tasks." });
   }
 };
-
+// [GET] /api/v1/detail/:id
 export const detail = async (req: Request, res: Response) => {
   const id: string = req.params.id;
   try {
@@ -69,5 +72,28 @@ export const detail = async (req: Request, res: Response) => {
     res
       .status(500)
       .json({ error: "An error occurred while fetching the task." });
+  }
+};
+
+// [PATCH] /api/v1/change-status/:id
+export const changeStatus = async (req: Request, res: Response) => {
+  const id = req.params.id;
+  const status: string = req.body.status;
+
+  try {
+    await Task.updateOne(
+      {
+        _id: id,
+      },
+      {
+        status: status,
+      }
+    );
+    res.json({
+      code: 200,
+      message: "Update status successfully.",
+    });
+  } catch (error) {
+    res.json(error);
   }
 };
