@@ -79,7 +79,6 @@ export const detail = async (req: Request, res: Response) => {
 export const changeStatus = async (req: Request, res: Response) => {
   const id = req.params.id;
   const status: string = req.body.status;
-
   try {
     await Task.updateOne(
       {
@@ -89,6 +88,41 @@ export const changeStatus = async (req: Request, res: Response) => {
         status: status,
       }
     );
+    res.json({
+      code: 200,
+      message: "Update status successfully.",
+    });
+  } catch (error) {
+    res.json(error);
+  }
+};
+
+// [PATCH] /api/v1/changeMulti
+export const changeMulti = async (req: Request, res: Response) => {
+  const ids: string[] = req.body.ids;
+  const key: string = req.body.key;
+  const value: string = req.body.value;
+
+  enum Key {
+    STATUS = "status",
+  }
+  try {
+    switch (key) {
+      case Key.STATUS:
+        await Task.updateMany(
+          {
+            _id: { $in: ids },
+          },
+          {
+            status: value,
+          }
+        );
+        break;
+
+      default:
+        break;
+    }
+
     res.json({
       code: 200,
       message: "Update status successfully.",
