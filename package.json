@@ -4,8 +4,16 @@
   "main": "index.js",
   "scripts": {
     "start": "nodemon index.ts",
+    "build": "rimraf dist && tsc",
+    "ts.check": "tsc --project tsconfig.json",
+    "add-build": "git add dist",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "pre-commit": [
+    "ts.check",
+    "build",
+    "add-build"
+  ],
   "author": "",
   "license": "ISC",
   "description": "",
@@ -16,7 +24,9 @@
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
     "md5": "^2.3.0",
-    "mongoose": "^8.5.1"
+    "mongoose": "^8.5.1",
+    "pre-commit": "^1.2.2",
+    "rimraf": "^6.0.1"
   },
   "devDependencies": {
     "@types/cookie-parser": "^1.4.7",
