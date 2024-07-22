@@ -20,7 +20,8 @@ export const requireAuth = async (
       });
       return;
     }
-    req.user = user;
+    req["user"] = user;
+    // res.locals.user = user; khi render view
     next();
   } else {
     res.status(401).json({

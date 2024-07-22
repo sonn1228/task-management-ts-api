@@ -78,12 +78,11 @@ export const login = async (req: Request, res: Response) => {
 };
 // [POST]/api/v1/users/detail
 export const detail = async (req: any, res: Response) => {
-  const id: string = req.params.id;
   try {
     res.json({
       code: 200,
       message: "success",
-      data: req.user,
+      data: req["user"],
     });
   } catch (error) {
     res.json({
