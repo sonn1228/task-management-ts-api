@@ -26,7 +26,7 @@ export const requireAuth = async (
   } else {
     res.status(401).json({
       code: 401,
-      message: "Authorization header not found",
+      message: "Vui lòng gửi kèm token!",
     });
   }
 };
